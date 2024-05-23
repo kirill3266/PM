@@ -72,7 +72,7 @@ int main() {
         std::vector<double> TheorS(Fs); // Теоретический выходной сигнал
         std::vector<double> Demod(Fs); // Демодулированный сигнал
         std::vector<double> Unwrap(Fs); // Unwrapped демодулированный сигнал
-        std::complex<double> i{0.0,1.0};
+        std::complex<double> j{0.0,1.0};
         std::complex<double> cmp;
 
         // Генерация временных отсчётов
@@ -83,8 +83,9 @@ int main() {
         for (int i = 0; i < Fs; ++i) {
                 Sm[i] = std::sin(2 * std::numbers::pi * Fc1 * t[i]);
                 Sn[i] = Amplitude * std::sin(2 * std::numbers::pi * Fc * t[i]);
-                I[i] = Amplitude * std::cos(M * Sm[i]);
-                Q[i] = Amplitude * std::sin(M * Sm[i]);
+                cmp = std::exp(j*M*Sm[i]);
+                I[i] = std::real(cmp);
+                Q[i] = Amplitude * std::imag(cmp);
                 S[i] = I[i] * std::cos(2 * std::numbers::pi * Fc * t[i]) +
                        Q[i] * std::sin(2 * std::numbers::pi * Fc * t[i]);
                 TheorS[i] = Amplitude * std::cos(2 * std::numbers::pi * Fc * t[i] + M * Sm[i]);
