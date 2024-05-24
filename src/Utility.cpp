@@ -3,8 +3,9 @@
 //
 
 #include "Utility.h"
+#include <algorithm>
 
-void goertzel_cmplx(std::vector<std::complex<double>>& in, std::vector<double> f, std::vector<std::complex<double>>& out)
+void Utility::goertzel_cmplx(std::vector<std::complex<double>>& in, std::vector<double> f, std::vector<std::complex<double>>& out)
 {
 
         int m, p;
@@ -38,7 +39,7 @@ void goertzel_cmplx(std::vector<std::complex<double>>& in, std::vector<double> f
 }
 
 // Вычисление спектральной плотности энергии и перевод её в дб
-double logPower(fftw_complex in, double scale) {
+double Utility::logPower(fftw_complex in, double scale) {
         double re = in[0] * scale;
         double im = in[1] * scale;
         double magsq = re * re + im * im; // квадрат амплитудного спектра или спектральная плотность
@@ -46,14 +47,14 @@ double logPower(fftw_complex in, double scale) {
 }
 
 // Вычисление спектральной плотности энергии и перевод её в дб
-double logPower(double I,double Q, double scale) {
+double Utility::logPower(double I,double Q, double scale) {
         double re = I * scale;
         double im = Q * scale;
         double magsq = re * re + im * im; // квадрат амплитудного спектра или спектральная плотность
         return (std::log(magsq) * 10.0 / std::log(10.0)); // перевод спектральной плотности энергии в дБ
 }
 
-std::vector<double> FFT(const std::vector<double> &t_data, const int t_Fs) {
+std::vector<double> Utility::FFT(const std::vector<double> &t_data, const int t_Fs) {
         // Объявление переменных
         fftw_complex *in, *out;
         fftw_plan p;
@@ -88,7 +89,7 @@ std::vector<double> FFT(const std::vector<double> &t_data, const int t_Fs) {
         return pwr;
 }
 
-std::vector<double> FFT(std::vector<std::complex<double>> &t_data, int t_Fs, const int n_threads) {
+std::vector<double> Utility::FFT(std::vector<std::complex<double>> &t_data, int t_Fs, const int n_threads) {
         fftw_complex *in, *out;
         fftw_plan p;
         int fftSize = static_cast<int>(t_data.size());
@@ -125,7 +126,7 @@ std::vector<double> FFT(std::vector<std::complex<double>> &t_data, int t_Fs, con
 }
 
 /// Фильтрация (линейная свёртка)
-std::vector<double> conv(const std::vector<double> &t_x, const std::vector<double> &t_y) {
+std::vector<double> Utility::conv(const std::vector<double> &t_x, const std::vector<double> &t_y) {
         std::vector<double> res(t_x.size());
         // Фильтрация (линейная свёртка)
         for (int n = 0; n < t_x.size(); ++n) {
@@ -136,4 +137,38 @@ std::vector<double> conv(const std::vector<double> &t_x, const std::vector<doubl
                         else break;
         }
         return res;
+}
+
+// phi - phase angle, lev - unwrap to which value, mar = threshold
+void Utility::unwrap(std::vector<double>& phi, double lev, double mar)
+{
+        double a[2] = {0.0, 0.0};
+        double d;
+        double th;
+        int k;
+        int flag = 1;
+
+        th = mar*lev;
+        while(flag)
+        {
+                flag = 0;
+                a[0] = a[1] = 0.0;
+                for(k = 0; k<phi.size()-1; k++)
+                {
+                        d = phi[k+1] - phi[k];
+                        if( d > th)
+                        {
+                                a[0] -= lev;
+                                flag = 1;
+                        }
+                        if( d < -th)
+                        {
+                                a[0] += lev;
+                                flag = 1;
+                        }
+                        phi[k]+=a[1];
+                        a[1] = a[0];
+                }
+                phi[phi.size()-1]+=a[1];
+        }
 }
