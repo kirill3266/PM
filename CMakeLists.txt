@@ -16,8 +16,11 @@ if(NOT matplotplusplus_POPULATED)
     add_subdirectory(${matplotplusplus_SOURCE_DIR} ${matplotplusplus_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
 
+include_directories(src include)
+
 find_library(fftw fftw3)
 
-add_executable(PM main.cpp)
+add_executable(PM main.cpp
+        src/Utility.cpp)
 
 target_link_libraries(PM PUBLIC matplot ${fftw})
