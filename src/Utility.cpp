@@ -125,21 +125,7 @@ std::vector<double> Utility::FFT(std::vector<std::complex<double>> &t_data, int 
         return res;
 }
 
-/// Фильтрация (линейная свёртка)
-std::vector<double> Utility::conv(const std::vector<double> &t_x, const std::vector<double> &t_y) {
-        std::vector<double> res(t_x.size());
-        // Фильтрация (линейная свёртка)
-        for (int n = 0; n < t_x.size(); ++n) {
-                res[n] = 0;
-                for (int k = 0; k < static_cast<int>(t_y.size()) - 1; ++k)
-                        if (n - k >= 0)
-                                res[n] += t_y[k] * t_x[n - k];
-                        else break;
-        }
-        return res;
-}
-
-// phi - phase angle, lev - unwrap to which value, mar = threshold
+// phi - phase angle, lev - unwrap to which value, mar = threshold,
 void Utility::unwrap(std::vector<double>& phi, double lev, double mar)
 {
         double a[2] = {0.0, 0.0};

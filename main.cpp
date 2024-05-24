@@ -103,6 +103,7 @@ int main() {
         for (int i = 0; i < F.size(); ++i) {
                 F[i] = static_cast<double>(i) * static_cast<double>(Fs) / (static_cast<double>(F.size()));
         }
+
 //        spectrum = Utility::FFT(complexS, Fs, 6);
 //        F.resize(spectrum.size());
 //        // Move spectrum

@@ -22,10 +22,7 @@ namespace Utility {
 
     std::vector<double> FFT(std::vector<std::complex<double>> &t_data, int t_Fs, const int n_threads);
 
-    std::vector<double> conv(const std::vector<double> &t_x, const std::vector<double> &t_y);
-
     void unwrap(std::vector<double>& phi, double lev, double mar);
-
 
 }
 #endif //PM_UTILITY_H
