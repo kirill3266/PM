@@ -66,7 +66,6 @@ int main() {
         show(f);
         save(f, "../img/modulation.svg");
 
-        // TODO добавить фильтрацию
         // Демодуляция
         for (int i = 0; i < Fs; ++i) {
                 demodI[i] = std::cos(2 * std::numbers::pi * Fc * t[i]) * S[i];
@@ -96,30 +95,22 @@ int main() {
         show(f1);
         save(f1, "../img/demodulation.svg");
 
-
-        spectrum = Utility::FFT(Demod, Fs);
+        spectrum = Utility::FFT(complexS, Fs, 6);
         F.resize(spectrum.size());
         // Move spectrum
         for (int i = 0; i < F.size(); ++i) {
-                F[i] = static_cast<double>(i) * static_cast<double>(Fs) / (static_cast<double>(F.size()));
+                if (i < Fs / 2)
+                        F[i] = static_cast<double>(i) * static_cast<double>(Fs) / (static_cast<double>(F.size()));
+                else
+                        F[i] = -static_cast<double>(F.size() - i) * static_cast<double>(Fs) /
+                               (static_cast<double>(F.size()));
         }
-
-//        spectrum = Utility::FFT(complexS, Fs, 6);
-//        F.resize(spectrum.size());
-//        // Move spectrum
-//        for (int i = 0; i < F.size(); ++i) {
-//                if (i < Fs / 2)
-//                        F[i] = static_cast<double>(i) * static_cast<double>(Fs) / (static_cast<double>(F.size()));
-//                else
-//                        F[i] = -static_cast<double>(F.size() - i) * static_cast<double>(Fs) /
-//                               (static_cast<double>(F.size()));
-//        }
 
         // Герцель
         std::vector<std::complex<double>> out(2);
         Utility::goertzel_cmplx(complexS, std::vector<double>{10, 30}, out);
-        std::cout << Utility::logPower(out[0].real(), out[0].imag(), 1) << " "
-                  << Utility::logPower(out[1].real(), out[1].imag(), 1)
+        std::cout << Utility::logPower(out[0].real(), out[0].imag(), 1.0/Fs) << " "
+                  << Utility::logPower(out[1].real(), out[1].imag(), 1.0/Fs)
                   << std::endl;
 
         auto f2 = figure(true);
@@ -128,7 +119,7 @@ int main() {
         auto axSpectrum = axes(f2);
 
         plot(axSpectrum, F, spectrum);
-        title(axSpectrum, "Положительный спектр принятого на демодулятор сигнала");
+        title(axSpectrum, "Cпектр принятого на демодулятор сигнала");
         show(f2);
 
         save(f2, "../img/spectrum.svg");
